@@ -1,16 +1,13 @@
 ###
-POST  http://localhost:3000/api/menu
+GET  http://localhost:3000/api/menu
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI5Nzc2ODY2LCJleHAiOjE3Mjk3ODQwNjZ9.D8r8OXdT9EZ-CTunEEv5UBxHjX6q9ciTUzS7DlFJ-pA
+
+
+### 删除角色
+DELETE  http://localhost:3000/api/role
 Content-Type: application/json
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI1OTU4ODM0LCJleHAiOjE3MjU5NjYwMzR9.Bcvux9H5eRYX_Jk73gcF9tRWxOCcbRwLPhwUvpcmYNQ
-
-{
-  "app_id": 1,
-  "name": "菜单"
-}
-
-### 菜单列表
-GET http://localhost:3000/api/menu?app_id=1&page=1&limit=10
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI2MjE5OTgzLCJleHAiOjE3MjYyMjcxODN9.4HOMMpFx5PaUi9rvAENATpsE4wHhLrjL2PZxY3tOaE8
 
 
 ###

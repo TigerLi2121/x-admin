@@ -10,15 +10,8 @@
           </div>
         </t-col>
       </t-row>
-      <t-enhanced-table
-        ref="table"
-        row-key="id"
-        :columns="columns"
-        :data="dList"
-        :hover="true"
-        :loading="isLoading"
-        :tree="{ treeNodeColumnIndex: 0 }"
-      >
+      <t-enhanced-table ref="table" row-key="id" :columns="columns" :data="dList" :hover="true" :loading="isLoading"
+        :tree="{ treeNodeColumnIndex: 0 }">
         <template #type="{ row }">
           <t-tag v-if="row.type === 1" theme="primary" variant="light"> 目录 </t-tag>
           <t-tag v-if="row.type === 2" theme="success" variant="light"> 菜单 </t-tag>
@@ -74,12 +67,8 @@
             </t-form-item>
             <t-form-item v-if="d.type !== 3" label="菜单图标" name="icon">
               <t-select v-model="d.icon" placeholder="请选择">
-                <t-option
-                  v-for="item in iconOptions"
-                  :key="item.stem"
-                  :value="item.stem"
-                  :style="{ display: 'inline-block' }"
-                >
+                <t-option v-for="item in iconOptions" :key="item.stem" :value="item.stem"
+                  :style="{ display: 'inline-block' }">
                   <div>
                     <t-icon :name="item.stem" />
                   </div>

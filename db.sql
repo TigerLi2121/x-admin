@@ -1,16 +1,5 @@
-CREATE DATABASE x_user;
-
-DROP TABLE IF EXISTS `app`;
-CREATE TABLE `app` (
-  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `name` VARCHAR(100) NOT NULL COMMENT '名称',
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`)
-) COMMENT='应用';
-
-INSERT INTO `app`(`name`) VALUES ('用户平台');
-
+-- Active: 1721097763988@@127.0.0.1@3306@x_admin
+CREATE DATABASE x_admin;
 
 DROP TABLE IF EXISTS `opt_log`;
 CREATE TABLE `opt_log` (
@@ -29,7 +18,6 @@ CREATE TABLE `opt_log` (
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `app_id`	BIGINT UNSIGNED NOT NULL COMMENT '应用id',
   `username` VARCHAR(50) NOT NULL COMMENT '账号',
   `password` VARCHAR(50) NOT NULL COMMENT '密码',
 	`email`      VARCHAR(100) NOT NULL DEFAULT '' COMMENT '邮箱',
@@ -40,15 +28,14 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`)
 ) COMMENT='用户';
 
-INSERT INTO `user`(`app_id`, `username`, `password`)
-VALUES (1, 'admin', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO `user`(`username`, `password`)
+VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3');
 
 
 DROP TABLE IF EXISTS `menu`;
 CREATE TABLE `menu` (
 	`id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
 	`pid` BIGINT UNSIGNED NOT NULL DEFAULT '0' COMMENT '父id，一级菜单为0',
-	`app_id` BIGINT UNSIGNED NOT NULL COMMENT '应用id',
 	`name` VARCHAR ( 50 ) NOT NULL COMMENT '菜单名称',
 	`path` VARCHAR ( 200 ) NOT NULL DEFAULT '' COMMENT '路由路径',
 	`component` VARCHAR ( 200 ) NOT NULL DEFAULT '' COMMENT '组件路径',
@@ -62,35 +49,35 @@ CREATE TABLE `menu` (
 	PRIMARY KEY ( `id` ) 
 ) COMMENT = '菜单';
 
-INSERT INTO `menu`(`id`,`pid`,`app_id`,`name`,`path`,`component`,`icon`,`perms`,`type`) VALUES
-(1, 0, 1, '菜单管理', '/menu', '/menu', '', '', 2),
-(2, 1, 1, '新增', '', '', '', 'menu:add', 3),
-(3, 1, 1, '修改', '', '', '', 'menu:update', 3),
-(4, 1, 1, '删除', '', '', '', 'menu:delete', 3),
-(5, 0, 1, '用户管理', '/user', '/user', '', '', 2),
-(6, 5, 1, '新增', '', '', '', 'user:add', 3),
-(7, 5, 1, '修改', '', '', '', 'user:update', 3),
-(8, 5, 1, '删除', '', '', '', 'user:delete', 3),
-(9, 0, 1, '角色管理', '/role', '/role', '', '', 2),
-(10, 9, 1, '新增', '', '', '', 'role:add', 3),
-(11, 9, 1, '修改', '', '', '', 'role:update', 3),
-(12, 9, 1, '删除', '', '', '', 'role:delete', 3);
+INSERT INTO `menu`(`id`,`pid`,`name`,`path`,`component`,`icon`,`perms`,`type`) VALUES
+(1, 0, '系统管理', '/sys', '', '', '', 1),
+(2, 1, '菜单管理', 'menu', '/sys/menu', '', '', 2),
+(3, 2, '新增', '', '', '', 'menu:add', 3),
+(4, 2, '修改', '', '', '', 'menu:update', 3),
+(5, 2, '删除', '', '', '', 'menu:delete', 3),
+(6, 1, '用户管理', 'user', '/sys/user', '', '', 2),
+(7, 6, '新增', '', '', '', 'user:add', 3),
+(8, 6, '修改', '', '', '', 'user:update', 3),
+(9, 6, '删除', '', '', '', 'user:delete', 3),
+(10, 1, '角色管理', 'role', '/sys/role', '', '', 2),
+(11, 10, '新增', '', '', '', 'role:add', 3),
+(12, 10, '修改', '', '', '', 'role:update', 3),
+(13, 10, '删除', '', '', '', 'role:delete', 3);
 
 
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `app_id`	BIGINT UNSIGNED NOT NULL COMMENT '应用id',
   `name` varchar(50) NOT NULL COMMENT '名字',
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) COMMENT='角色';
 
-INSERT INTO `role`(`app_id`,`name`) VALUES
-(1,'研发'),
-(1,'测试'),
-(1,'产品');
+INSERT INTO `role`(`name`) VALUES
+ ('研发'),
+ ('测试'),
+ ('产品');
 
 
 DROP TABLE IF EXISTS `role_menu`;
