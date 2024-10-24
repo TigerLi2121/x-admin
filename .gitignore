@@ -4,3 +4,4 @@ logs
 Cargo.lock
 .idea
 /web/node_modules
+/web/dist

@@ -21,12 +21,17 @@ async fn main() {
     init_log().await;
 
     let router = Router::new()
-        .route("/", get(|| async { "Hello World!" }))
+        .route("/", get(|| async { "Hello, World!" }))
         .route("/login", post(route::user::login))
-        .nest("/user", route::user::router().route_layer(middleware::from_fn(auth)))
-        .nest("/app", route::app::router().route_layer(middleware::from_fn(auth)))
-        .nest("/role", route::role::router().route_layer(middleware::from_fn(auth)))
-        .nest("/menu", route::menu::router().route_layer(middleware::from_fn(auth)))
+        .nest(
+            "/api",
+            Router::new()
+                .nest("/user", route::user::router())
+                .nest("/app", route::app::router())
+                .nest("/role", route::role::router())
+                .nest("/menu", route::menu::router())
+                .route_layer(middleware::from_fn(auth)),
+        )
         .layer(middleware::from_fn(mid::api_log::log))
         .layer(CorsLayer::new().allow_methods(Any).allow_origin(Any));
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

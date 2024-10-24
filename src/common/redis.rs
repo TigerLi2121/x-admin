@@ -16,15 +16,36 @@ pub fn get_pool() -> Option<&'static Pool<RedisConnectionManager>> {
 }
 
 pub async fn set(key: &str, val: &str) {
-    get_pool().unwrap().get().await.unwrap().set::<&str, &str, ()>(key, val).await.unwrap();
+    get_pool()
+        .unwrap()
+        .get()
+        .await
+        .unwrap()
+        .set::<&str, &str, ()>(key, val)
+        .await
+        .unwrap();
 }
 
 pub async fn set_ex(key: &str, val: &str, ex: u64) {
-    get_pool().unwrap().get().await.unwrap().set_ex::<&str, &str, ()>(key, val, ex).await.unwrap();
+    get_pool()
+        .unwrap()
+        .get()
+        .await
+        .unwrap()
+        .set_ex::<&str, &str, ()>(key, val, ex)
+        .await
+        .unwrap();
 }
 
 pub async fn get(key: &str) -> String {
-    get_pool().unwrap().get().await.unwrap().get(key).await.unwrap_or("".to_string())
+    get_pool()
+        .unwrap()
+        .get()
+        .await
+        .unwrap()
+        .get(key)
+        .await
+        .unwrap_or("".to_string())
 }
 
 #[tokio::test]

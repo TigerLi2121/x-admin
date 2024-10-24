@@ -10,6 +10,7 @@ use serde_json::Value;
 use sqlx::Error;
 
 pub async fn auth(mut req: Request, next: Next) -> Result<impl IntoResponse, (StatusCode, String)> {
+    let logout = Ok(R::<Value>::code(886, String::from("login user")).into_response());
     let token = req
         .headers()
         .get(header::AUTHORIZATION)
@@ -22,16 +23,19 @@ pub async fn auth(mut req: Request, next: Next) -> Result<impl IntoResponse, (St
             }
         });
     if token.is_none() {
-        return Ok(R::<Value>::code(886, String::from("login user")).into_response());
+        return logout;
     }
     let uid = jwt::get_uid(token.unwrap());
+    if uid == 0 {
+        return logout;
+    }
 
     let user: Result<User, Error> = sqlx::query_as("SELECT * FROM user WHERE id = ?")
         .bind(uid)
         .fetch_one(get_pool().unwrap())
         .await;
     if user.is_err() {
-        return Ok(R::<Value>::code(886, String::from("login user")).into_response());
+        return logout;
     }
     req.extensions_mut().insert(user.unwrap());
     Ok(next.run(req).await)

@@ -1,5 +1,5 @@
 ###
-POST  http://localhost:3000/menu
+POST  http://localhost:3000/api/menu
 Content-Type: application/json
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI1OTU4ODM0LCJleHAiOjE3MjU5NjYwMzR9.Bcvux9H5eRYX_Jk73gcF9tRWxOCcbRwLPhwUvpcmYNQ
 
@@ -9,12 +9,12 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0I
 }
 
 ### 菜单列表
-GET http://localhost:3000/menu?app_id=1&page=1&limit=10
+GET http://localhost:3000/api/menu?app_id=1&page=1&limit=10
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI2MjE5OTgzLCJleHAiOjE3MjYyMjcxODN9.4HOMMpFx5PaUi9rvAENATpsE4wHhLrjL2PZxY3tOaE8
 
 
 ###
-POST  http://localhost:3000/role
+POST  http://localhost:3000/api/role
 Content-Type: application/json
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI1OTU4ODM0LCJleHAiOjE3MjU5NjYwMzR9.Bcvux9H5eRYX_Jk73gcF9tRWxOCcbRwLPhwUvpcmYNQ
 
@@ -24,12 +24,12 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0I
 }
 
 ###
-GET http://localhost:3000/role?app_id=1&page=1&limit=10
+GET http://localhost:3000/api/role?app_id=1&page=1&limit=10
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI1OTU4ODM0LCJleHAiOjE3MjU5NjYwMzR9.Bcvux9H5eRYX_Jk73gcF9tRWxOCcbRwLPhwUvpcmYNQ
 
 
 ###
-POST  http://localhost:3000/user
+POST  http://localhost:3000/api/user
 Content-Type: application/json
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI1OTU4ODM0LCJleHAiOjE3MjU5NjYwMzR9.Bcvux9H5eRYX_Jk73gcF9tRWxOCcbRwLPhwUvpcmYNQ
 
@@ -42,12 +42,12 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0I
 }
 
 ###
-GET http://localhost:3000/user?app_id=1&page=1&limit=10
+GET http://localhost:3000/api/user?app_id=1&page=1&limit=10
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI1OTU4ODM0LCJleHAiOjE3MjU5NjYwMzR9.Bcvux9H5eRYX_Jk73gcF9tRWxOCcbRwLPhwUvpcmYNQ
 
 ### 当前用户信息
-GET http://localhost:3000/user/current
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI2MjE5OTgzLCJleHAiOjE3MjYyMjcxODN9.4HOMMpFx5PaUi9rvAENATpsE4wHhLrjL2PZxY3tOaE8
+GET http://localhost:3000/api/user/current
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI5Nzc2ODY2LCJleHAiOjE3Mjk3ODQwNjZ9.D8r8OXdT9EZ-CTunEEv5UBxHjX6q9ciTUzS7DlFJ-pA
 
 
 ### 登录
