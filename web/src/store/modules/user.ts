@@ -1,37 +1,37 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 
-import { usePermissionStore } from '@/store';
-import request from '@/utils/request';
+import { usePermissionStore } from "@/store";
+import request from "@/utils/request";
 
-export const useUserStore = defineStore('user', {
+export const useUserStore = defineStore("user", {
   state: () => ({
-    token: '',
+    token: "",
     userInfo: {
-      username: '',
-      email: '',
-      mobile: '',
+      username: "",
+      email: "",
+      mobile: "",
       menus: [],
     },
   }),
   actions: {
     async login(user: any) {
-      const res: any = await request.post('/api/login', user);
+      const res: any = await request.post("/x-admin/login", user);
       if (res.data) {
-        this.token = res.data.token;
-        localStorage.setItem('x-token', this.token);
+        this.token = res.data;
+        localStorage.setItem("x-token", this.token);
       }
       return res;
     },
     async getUserInfo() {
-      this.token = localStorage.getItem('x-token');
-      const res = await request.get('/api/user/current');
+      this.token = localStorage.getItem("x-token");
+      const res = await request.get("/x-admin/api/user/current");
       if (res.data) {
         this.userInfo = res.data;
       }
       return res;
     },
     async logout() {
-      this.token = '';
+      this.token = "";
       localStorage.clear();
     },
   },

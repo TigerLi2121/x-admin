@@ -28,7 +28,7 @@ pub async fn login(Json(login): Json<Login>) -> R<String> {
         return R::err_msg("account deactivated".to_string());
     }
     let pwd = format!("{:x}", Md5::digest(login.password.as_bytes()));
-    if user.password.unwrap() != pwd {
+    if user.password != Some(pwd) {
         return R::err_msg("password error".to_string());
     }
     let token = get_token(user.id.unwrap());

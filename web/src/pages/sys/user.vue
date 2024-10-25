@@ -8,9 +8,8 @@
               <t-button @click="add"> 新增 </t-button>
             </span>
             <div v-has="'user:delete'" class="delete-btn">
-              <t-button variant="base" theme="danger" :disabled="!selectedRowKeys.length" @click="delBatch"
-                >删除</t-button
-              >
+              <t-button variant="base" theme="danger" :disabled="!selectedRowKeys.length"
+                @click="delBatch">删除</t-button>
               <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
             </div>
           </div>
@@ -28,17 +27,9 @@
           </t-row>
         </t-col>
       </t-row>
-      <t-table
-        row-key="id"
-        :columns="columns"
-        :data="ds"
-        :hover="true"
-        :pagination="pagination"
-        :selected-row-keys="selectedRowKeys"
-        :loading="isLoading"
-        @page-change="(pi) => list(pi)"
-        @select-change="selectChange"
-      >
+      <t-table row-key="id" :columns="columns" :data="ds" :hover="true" :pagination="pagination"
+        :selected-row-keys="selectedRowKeys" :loading="isLoading" @page-change="(pi) => list(pi)"
+        @select-change="selectChange">
         <template #status="{ row }">
           <t-tag v-if="row.status === 1" theme="success" variant="light"> 正常 </t-tag>
           <t-tag v-if="row.status === 0" theme="warning" variant="light"> 禁用 </t-tag>
@@ -127,7 +118,7 @@ const isLoading = ref(false);
 const list = async (page: any = pagination.value) => {
   isLoading.value = true;
   try {
-    const res: any = await request.get('/api/user', {
+    const res: any = await request.get('/x-admin/api/user', {
       params: { page: page.current, limit: page.pageSize, ...query.value },
     });
     if (res.data) {
@@ -142,7 +133,7 @@ const list = async (page: any = pagination.value) => {
 };
 // 角色选择数据
 const getRoleSelect = async () => {
-  const res: any = await request.get('/api/role?page=1&limit=10000');
+  const res: any = await request.get('/x-admin/api/role?page=1&limit=10000');
   if (res.data) {
     return res.data.map((e) => ({ value: e.id, label: e.name }));
   }
@@ -177,7 +168,7 @@ const rules: any = {
 const onSubmit = async ({ validateResult, firstError, e }) => {
   e.preventDefault();
   if (validateResult === true) {
-    const res: any = await request.post('/api/user', d.value);
+    const res: any = await request.post('/x-admin/api/user', d.value);
     if (res.code === 0) {
       MessagePlugin.success('处理成功');
       dialogVisible.value = false;
@@ -189,7 +180,7 @@ const onSubmit = async ({ validateResult, firstError, e }) => {
 };
 // 删除数据
 const del = async (ids) => {
-  const res: any = await request.delete('/api/user', { data: ids });
+  const res: any = await request.delete('/x-admin/api/user', { data: ids });
   if (res.code === 0) {
     MessagePlugin.success('删除成功');
     await list();

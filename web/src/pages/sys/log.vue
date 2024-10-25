@@ -19,7 +19,7 @@
           <t-row>
             <t-col :flex="1">
               <div style="width: 360px">
-                <t-input v-model="query.q" placeholder="请输入操作" type="text"/>
+                <t-input v-model="query.q" placeholder="请输入操作" type="text" />
               </div>
             </t-col>
             <t-col :flex="1">
@@ -28,17 +28,8 @@
           </t-row>
         </t-col>
       </t-row>
-      <t-table
-          :columns="columns"
-          :data="dList"
-          :hover="true"
-          :loading="isLoading"
-          :pagination="pagination"
-          :selected-row-keys="selectedRowKeys"
-          row-key="id"
-          @page-change="(pi) => list(pi)"
-          @select-change="selectChange"
-      >
+      <t-table :columns="columns" :data="dList" :hover="true" :loading="isLoading" :pagination="pagination"
+        :selected-row-keys="selectedRowKeys" row-key="id" @page-change="(pi) => list(pi)" @select-change="selectChange">
         <!-- <template #op="{ row }">
           <a v-has="'log:update'" class="t-button-link" @click="update(row)">修改</a>
           <span v-has="'log:delete'">
@@ -86,20 +77,20 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {onMounted, ref} from 'vue';
-import {DialogPlugin, MessagePlugin} from 'tdesign-vue-next';
+import { onMounted, ref } from 'vue';
+import { DialogPlugin, MessagePlugin } from 'tdesign-vue-next';
 import request from '@/utils/request';
 // 列表数据
 const columns: any = [
   // { colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left' },
-  {colKey: 'id', title: 'id', ellipsis: true, width: 80},
-  {colKey: 'username', title: '用户名', ellipsis: true, width: 80},
-  {colKey: 'operation', title: '用户操作', ellipsis: true, width: 120},
-  {colKey: 'method', title: '请求方法', ellipsis: true, width: 120},
-  {colKey: 'params', title: '请求参数', ellipsis: true, width: 220},
-  {colKey: 'time', title: '执行时长(ms)', ellipsis: true, width: 120},
-  {colKey: 'ip', title: 'IP地址', ellipsis: true, width: 180},
-  {colKey: 'created_at', title: '创建时间', ellipsis: true, width: 180},
+  { colKey: 'id', title: 'id', ellipsis: true, width: 80 },
+  { colKey: 'username', title: '用户名', ellipsis: true, width: 80 },
+  { colKey: 'operation', title: '用户操作', ellipsis: true, width: 120 },
+  { colKey: 'method', title: '请求方法', ellipsis: true, width: 120 },
+  { colKey: 'params', title: '请求参数', ellipsis: true, width: 220 },
+  { colKey: 'time', title: '执行时长(ms)', ellipsis: true, width: 120 },
+  { colKey: 'ip', title: 'IP地址', ellipsis: true, width: 180 },
+  { colKey: 'created_at', title: '创建时间', ellipsis: true, width: 180 },
   // { colKey: 'op', title: '操作', align: 'center', fixed: 'right', width: 160 },
 ];
 const form: any = ref({});
@@ -117,12 +108,12 @@ const isLoading = ref(false);
 const list: any = async (page = pagination.value) => {
   isLoading.value = true;
   try {
-    const res: any = await request.get('/api/sys_log', {
-      params: {...query.value, page: page.current, limit: page.pageSize},
+    const res: any = await request.get('/x-admin/api/sys_log', {
+      params: { ...query.value, page: page.current, limit: page.pageSize },
     });
     if (res.data) {
       dList.value = res.data;
-      pagination.value = {...page, total: res.total};
+      pagination.value = { ...page, total: res.total };
     }
   } catch (e) {
     console.log(e);
@@ -143,13 +134,13 @@ const add = () => {
 // 修改
 const update = (row) => {
   dialogVisible.value = true;
-  d.value = {...row};
+  d.value = { ...row };
 };
 // 提交
-const onSubmit = async ({validateResult, firstError, e}) => {
+const onSubmit = async ({ validateResult, firstError, e }) => {
   e.preventDefault();
   if (validateResult === true) {
-    const res: any = await request.post('/api/sys_log', d.value);
+    const res: any = await request.post('/x-admin/api/sys_log', d.value);
     if (res.code === 0) {
       MessagePlugin.success('处理成功');
       dialogVisible.value = false;
@@ -161,7 +152,7 @@ const onSubmit = async ({validateResult, firstError, e}) => {
 };
 // 删除数据
 const del = async (ids) => {
-  const res: any = await request.delete('/api/sys_log', {data: ids});
+  const res: any = await request.delete('/x-admin/api/sys_log', { data: ids });
   if (res.code === 0) {
     MessagePlugin.success('删除成功');
     await list();

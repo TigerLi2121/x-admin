@@ -100,7 +100,7 @@ Authorization: Bearer {{token}}
 
 
 ### 登录
-POST  http://localhost:3000/login
+POST  http://localhost:3000/x-admin/login
 Content-Type: application/json
 
 {
@@ -108,4 +108,5 @@ Content-Type: application/json
   "password": "admin"
 }
 
+### 
 @token = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI5ODU1MjMyLCJleHAiOjE3Mjk4NjI0MzJ9.e_CMlEcpUQTMSyarmBPZkXf5fYk3ijgztcBGCkzJuko

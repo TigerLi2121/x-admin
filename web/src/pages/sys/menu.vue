@@ -126,7 +126,7 @@ const columns: any = [
 const list = async () => {
   isLoading.value = true;
   try {
-    const res: any = await request.get('/api/menu');
+    const res: any = await request.get('/x-admin/api/menu');
     if (res.data) {
       dList.value = res.data;
       const catalogList = getCatalog(res.data);
@@ -199,7 +199,7 @@ const rules: any = {
 const onSubmit = async ({ validateResult, firstError, e }) => {
   e.preventDefault();
   if (validateResult === true) {
-    const res: any = await request.post('/api/menu', d.value);
+    const res: any = await request.post('/x-admin/api/menu', d.value);
     if (res.code === 0) {
       MessagePlugin.success('处理成功');
       dialogVisible.value = false;
@@ -211,7 +211,7 @@ const onSubmit = async ({ validateResult, firstError, e }) => {
 };
 // 删除数据
 const del = async (ids) => {
-  const res: any = await request.delete('/api/menu', { data: ids });
+  const res: any = await request.delete('/x-admin/api/menu', { data: ids });
   if (res.code === 0) {
     MessagePlugin.success('删除成功');
     await list();

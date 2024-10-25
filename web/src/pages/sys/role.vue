@@ -20,18 +20,8 @@
       </t-row>
       <t-row justify="space-between" class="table-bar">
         <t-col :span="7">
-          <t-table
-            ref="table"
-            row-key="id"
-            :columns="columns"
-            :data="dList"
-            :hover="true"
-            :loading="isLoading"
-            active-row-type="single"
-            :pagination="pagination"
-            @page-change="(pi) => list(pi)"
-            @row-click="rowClick"
-          >
+          <t-table ref="table" row-key="id" :columns="columns" :data="dList" :hover="true" :loading="isLoading"
+            active-row-type="single" :pagination="pagination" @page-change="(pi) => list(pi)" @row-click="rowClick">
             <template #op="{ row }">
               <t-space>
                 <span v-has="'role:update'">
@@ -47,18 +37,8 @@
           </t-table>
         </t-col>
         <t-col :span="3">
-          <t-tree
-            ref="tree"
-            v-model="treeData"
-            :data="menus"
-            hover
-            checkable
-            line
-            expand-all
-            value-mode="all"
-            :disabled="selectRow.id === undefined"
-            @change="treeChange"
-          />
+          <t-tree ref="tree" v-model="treeData" :data="menus" hover checkable line expand-all value-mode="all"
+            :disabled="selectRow.id === undefined" @change="treeChange" />
         </t-col>
       </t-row>
 
@@ -111,7 +91,7 @@ const tree = ref(null);
 const list: any = async (page = pagination.value) => {
   isLoading.value = true;
   try {
-    const res: any = await request.get('/api/role', {
+    const res: any = await request.get('/x-admin/api/role', {
       params: { page: page.current, limit: page.pageSize },
     });
     if (res.data) {
@@ -162,7 +142,7 @@ const menuData = (menus) => {
 };
 // 获取菜单树
 const menuList = async () => {
-  const res: any = await request.get('/api/menu');
+  const res: any = await request.get('/x-admin/api/menu');
   if (res.data) {
     menus.value = menuData(res.data);
     // console.log('menus:', JSON.stringify(menus.value));
@@ -215,7 +195,7 @@ const rules: any = {
 };
 // 保存修改数据
 const saveOrUpdate = async (params) => {
-  const res: any = await request.post('/api/role', params);
+  const res: any = await request.post('/x-admin/api/role', params);
   if (res.code === 0) {
     MessagePlugin.success('处理成功');
     dialogVisible.value = false;
@@ -244,7 +224,7 @@ const onSubmit = async ({ validateResult, firstError, e }) => {
 };
 // 删除数据
 const del = async (ids) => {
-  const res: any = await request.delete('/api/role', { data: ids });
+  const res: any = await request.delete('/x-admin/api/role', { data: ids });
   if (res.code === 0) {
     MessagePlugin.success('删除成功');
     await list();
