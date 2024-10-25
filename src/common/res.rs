@@ -2,9 +2,10 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use std::fmt::Debug;
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RP<T: Serialize> {
     pub code: i32,
     pub msg: String,
@@ -35,16 +36,14 @@ where
     }
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct R<T: Serialize> {
     pub code: i32,
     pub msg: String,
     pub data: Option<T>,
 }
 
-impl<T> R<T>
-where
-    T: Serialize,
+impl<T: Serialize> R<T>
 {
     pub fn new(code: i32, msg: String, data: Option<T>) -> Self {
         Self { code, msg, data }
@@ -66,9 +65,7 @@ where
     }
 }
 
-impl<T> IntoResponse for R<T>
-where
-    T: Serialize,
+impl<T: Serialize> IntoResponse for R<T>
 {
     fn into_response(self) -> Response {
         Json(self).into_response()

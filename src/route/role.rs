@@ -12,15 +12,19 @@ pub fn router() -> Router {
 }
 
 pub async fn page(Query(p): Query<Page>) -> RP<Vec<Role>> {
-    role::page(p).await.unwrap()
+    role::page(p).await.unwrap_or(RP::ok(0, vec![]))
 }
 
 pub async fn sou(Json(m): Json<Role>) -> R<Value> {
-    role::sou(m).await.unwrap();
-    R::ok()
+    match role::sou(m).await {
+        Ok(_) => R::ok(),
+        Err(e) => R::err_msg(e.to_string()),
+    }
 }
 
 pub async fn del(Json(ids): Json<Vec<u64>>) -> R<Value> {
-    role::del(ids).await.unwrap();
-    R::ok()
+    match role::del(ids).await {
+        Ok(_) => R::ok(),
+        Err(e) => R::err_msg(e.to_string()),
+    }
 }

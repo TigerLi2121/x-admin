@@ -17,30 +17,30 @@ pub async fn get_user(username: String) -> Result<User, Error> {
 }
 
 pub async fn page(page: Page) -> Result<RP<Vec<User>>, Error> {
-    let count: (i32,) = sqlx::query_as("SELECT count(1) FROM user")
+    let count: i32 = sqlx::query_scalar("SELECT count(1) FROM user")
         .fetch_one(get_pool().unwrap())
         .await?;
     let mut ms: Vec<User> = vec![];
-    if count.0 > 0 {
+    if count > 0 {
         ms = sqlx::query_as("SELECT * FROM user ORDER BY id DESC LIMIT ? OFFSET ?")
             .bind(page.limit.to_string())
             .bind(page.offset().to_string())
             .fetch_all(get_pool().unwrap())
             .await?;
         // 获取用户角色id
-        let user_ids = ms.iter().map(|e| e.id.unwrap()).collect();
-        let urs = user_role::get_role_ids(user_ids).await?;
+        let user_ids = ms.iter().filter_map(|e| e.id).collect();
+        let urs = user_role::get_user_ids(user_ids).await?;
         for m in ms.iter_mut() {
             m.role_ids = Some(
                 urs.iter()
                     .filter(|e| e.user_id == m.id)
-                    .map(|e| e.role_id.unwrap())
+                    .filter_map(|e| e.role_id)
                     .collect(),
             );
         }
     }
 
-    Ok(RP::ok(count.0, ms))
+    Ok(RP::ok(count, ms))
 }
 
 pub async fn sou(user: User) -> Result<u64, Error> {
@@ -48,7 +48,7 @@ pub async fn sou(user: User) -> Result<u64, Error> {
     if user.id.is_none() {
         info!("insert");
         row = sqlx::query::<MySql>(
-            "INSERT INTO user (username,password,email,mobile,status) VALUES (?,?,?,?,?,?)",
+            "INSERT INTO user (username,password,email,mobile,status) VALUES (?,?,?,?,?)",
         )
         .bind(user.username)
         .bind(user.password)
@@ -61,8 +61,8 @@ pub async fn sou(user: User) -> Result<u64, Error> {
     } else {
         let mut sql: QueryBuilder<MySql> = QueryBuilder::new("UPDATE user SET username=");
         sql.push_bind(user.username);
-        if user.password.is_some() && !user.password.clone().unwrap().is_empty() {
-            sql.push(",password=").push_bind(user.password);
+        if let Some(password) = user.password.as_ref().filter(|p| !p.is_empty()) {
+            sql.push(",password=").push_bind(password);
         }
         sql.push(",email=").push_bind(user.email);
         sql.push(",mobile=").push_bind(user.mobile);
@@ -72,6 +72,10 @@ pub async fn sou(user: User) -> Result<u64, Error> {
         row = sql.build().execute(get_pool().unwrap()).await?;
         info!("{} rows updated", row.rows_affected());
     }
+
+    // 保存用户角色
+    user_role::batch_save(user.id.unwrap(), user.role_ids.unwrap()).await?;
+
     Ok(row.last_insert_id())
 }
 

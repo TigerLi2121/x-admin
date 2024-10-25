@@ -10,7 +10,6 @@ use axum::{Json, Router};
 use md5::{Digest, Md5};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use sqlx::Error;
 use std::fmt::Debug;
 
 pub fn router() -> Router {
@@ -20,7 +19,7 @@ pub fn router() -> Router {
 }
 
 pub async fn login(Json(login): Json<Login>) -> R<String> {
-    let user: Result<User, Error> = get_user(login.username.to_string()).await;
+    let user = get_user(login.username).await;
     if user.is_err() {
         return R::err_msg("username not exist".to_string());
     }
@@ -37,28 +36,31 @@ pub async fn login(Json(login): Json<Login>) -> R<String> {
 }
 
 pub async fn page(Query(p): Query<Page>) -> RP<Vec<User>> {
-    user::page(p).await.unwrap()
+    user::page(p).await.unwrap_or(RP::ok(0, vec![]))
 }
 
 pub async fn sou(Json(mut m): Json<User>) -> R<Value> {
-    if m.password.is_some() && !m.password.clone().unwrap().is_empty() {
-        m.password = Some(format!(
-            "{:x}",
-            Md5::digest(m.password.clone().unwrap().as_bytes())
-        ));
+    m.password = m
+        .password
+        .as_ref()
+        .filter(|pwd| !pwd.is_empty())
+        .and_then(|p| Some(format!("{:x}", Md5::digest(p.as_bytes()))));
+    match user::sou(m).await {
+        Ok(_) => R::ok(),
+        Err(e) => R::err_msg(e.to_string()),
     }
-    user::sou(m).await.unwrap();
-    R::ok()
 }
 
 pub async fn del(Json(ids): Json<Vec<u64>>) -> R<Value> {
-    user::del(ids).await.unwrap();
-    R::ok()
+    match user::del(ids).await {
+        Ok(_) => R::ok(),
+        Err(e) => R::err_msg(e.to_string()),
+    }
 }
 
 pub async fn current(req: Request) -> R<UserInfo> {
     let user = req.extensions().get::<User>().unwrap();
-    let mut ms = menu::list_user_id(user.id.unwrap()).await.unwrap();
+    let mut ms = menu::list_user_id(user.id.unwrap()).await.unwrap_or(vec![]);
     let perms = ms
         .iter()
         .filter(|m| m.perms != Some("".to_string()))
@@ -90,31 +92,27 @@ pub fn build_user_menus(pms: &Vec<UserMenu>, ms: &Vec<Menu>) -> Vec<UserMenu> {
                 .filter(|m| m.pid == pm.id)
                 .map(|e| convert(e.clone()))
                 .collect::<Vec<UserMenu>>();
-            if cms.is_empty() {
-                pm.redirect = Some(format!(
-                    "{}{}",
-                    pm.path.clone().unwrap(),
-                    pm.path.clone().unwrap()
-                ));
+            // 如果是菜单类型的菜单，并且未一级目录，设置single为true
+            if cms.is_empty() && pm.pid == Some(0) && pm.r#type == Some(2) {
                 pm.meta.as_mut().unwrap().single = Some(true);
                 pm.children = Some(vec![UserMenu {
                     id: pm.id.clone(),
+                    pid: pm.pid.clone(),
+                    r#type: pm.r#type,
                     path: Some(pm.path.clone().unwrap().replace("/", "")),
                     name: pm.name.clone(),
                     component: pm.component.clone(),
-                    redirect: None,
                     meta: pm.meta.clone(),
-                    children: Some(Vec::new()),
+                    children: Some(vec![]),
                 }]);
+                pm.component = Some("LAYOUT".to_string());
             } else {
-                pm.redirect = Some(format!(
-                    "{}/{}",
-                    pm.path.clone().unwrap(),
-                    pm.path.clone().unwrap()
-                ));
                 pm.children = Some(build_user_menus(&cms, &ms));
             }
-            pm.component = Some("LAYOUT".to_string());
+            // 目录类型的菜单，component为LAYOUT
+            if pm.r#type == Some(1) {
+                pm.component = Some("LAYOUT".to_string());
+            }
             pm
         })
         .collect()
@@ -123,17 +121,18 @@ pub fn build_user_menus(pms: &Vec<UserMenu>, ms: &Vec<Menu>) -> Vec<UserMenu> {
 fn convert(menu: Menu) -> UserMenu {
     UserMenu {
         id: menu.id,
+        pid: menu.pid,
+        r#type: menu.r#type,
         path: menu.path,
         name: menu.name.clone(),
         component: menu.component,
-        redirect: None,
         meta: Some(MenuMeta {
             title: menu.name,
             icon: menu.icon,
             single: Some(false),
             hidden: Some(menu.status == Some(2)),
         }),
-        children: Some(Vec::new()),
+        children: Some(vec![]),
     }
 }
 
@@ -150,10 +149,11 @@ pub struct UserInfo {
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct UserMenu {
     pub id: Option<u64>,
+    pub pid: Option<u64>,
+    pub r#type: Option<i32>,
     pub path: Option<String>,
     pub name: Option<String>,
     pub component: Option<String>,
-    pub redirect: Option<String>,
     pub meta: Option<MenuMeta>,
     pub children: Option<Vec<UserMenu>>,
 }

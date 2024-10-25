@@ -50,16 +50,16 @@ CREATE TABLE `menu` (
 ) COMMENT = '菜单';
 
 INSERT INTO `menu`(`id`,`pid`,`name`,`path`,`component`,`icon`,`perms`,`type`) VALUES
-(1, 0, '系统管理', '/sys', '', '', '', 1),
-(2, 1, '菜单管理', 'menu', '/sys/menu', '', '', 2),
+(1, 0, '系统管理', '/sys', '', 'home', '', 1),
+(2, 1, '菜单管理', 'menu', '/sys/menu', 'menu', '', 2),
 (3, 2, '新增', '', '', '', 'menu:add', 3),
 (4, 2, '修改', '', '', '', 'menu:update', 3),
 (5, 2, '删除', '', '', '', 'menu:delete', 3),
-(6, 1, '用户管理', 'user', '/sys/user', '', '', 2),
+(6, 1, '用户管理', 'user', '/sys/user', 'user-1', '', 2),
 (7, 6, '新增', '', '', '', 'user:add', 3),
 (8, 6, '修改', '', '', '', 'user:update', 3),
 (9, 6, '删除', '', '', '', 'user:delete', 3),
-(10, 1, '角色管理', 'role', '/sys/role', '', '', 2),
+(10, 1, '角色管理', 'role', '/sys/role', 'transform', '', 2),
 (11, 10, '新增', '', '', '', 'role:add', 3),
 (12, 10, '修改', '', '', '', 'role:update', 3),
 (13, 10, '删除', '', '', '', 'role:delete', 3);
@@ -114,3 +114,4 @@ CREATE TABLE `user_role` (
 ) COMMENT='用户角色';
 
 INSERT INTO `user_role`(`user_id`,`role_id`) VALUES (1,1);
+

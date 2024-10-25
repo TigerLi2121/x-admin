@@ -20,7 +20,7 @@ pub async fn page(page: Page) -> Result<RP<Vec<Role>>, Error> {
             .fetch_all(get_pool().unwrap())
             .await?;
         let ids = ms.iter().map(|e| e.id.unwrap()).collect();
-        let rms = role_menu::get_menu_ids(ids).await?;
+        let rms = role_menu::get_role_ids(ids).await?;
         for m in ms.iter_mut() {
             m.menu_ids = Some(
                 rms.iter()
@@ -49,6 +49,10 @@ pub async fn sou(role: Role) -> Result<u64, Error> {
         row = sql.build().execute(get_pool().unwrap()).await?;
         info!("{} rows updated", row.rows_affected());
     }
+
+    // 保存菜单
+    role_menu::batch_save(role.id.unwrap(), role.menu_ids.unwrap()).await?;
+
     Ok(row.last_insert_id())
 }
 

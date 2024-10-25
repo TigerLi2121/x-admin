@@ -15,7 +15,7 @@ pub async fn list_user_id(user_id: u64) -> Result<Vec<Menu>, Error> {
 }
 
 pub async fn list() -> Result<Vec<Menu>, Error> {
-    let ms: Vec<Menu> = sqlx::query_as("SELECT * FROM menu WHERE ORDER BY sort DESC")
+    let ms: Vec<Menu> = sqlx::query_as("SELECT * FROM menu ORDER BY sort DESC")
         .fetch_all(get_pool().unwrap())
         .await?;
     Ok(ms)

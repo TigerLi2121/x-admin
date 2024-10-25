@@ -10,20 +10,24 @@ pub fn router() -> Router {
 }
 
 pub async fn list() -> R<Vec<Menu>> {
-    let ms = menu::list().await.unwrap();
+    let ms = menu::list().await.unwrap_or(vec![]);
     let pm = ms.iter().filter(|m| m.pid == Some(0)).cloned().collect();
     let ms = build_menus(&pm, &ms);
     R::ok_data(ms)
 }
 
 pub async fn sou(Json(m): Json<Menu>) -> R<Value> {
-    menu::sou(m).await.unwrap();
-    R::ok()
+    match menu::sou(m).await {
+        Ok(_) => R::ok(),
+        Err(e) => R::err_msg(e.to_string()),
+    }
 }
 
 pub async fn del(Json(ids): Json<Vec<u64>>) -> R<Value> {
-    menu::del(ids).await.unwrap();
-    R::ok()
+    match menu::del(ids).await {
+        Ok(_) => R::ok(),
+        Err(e) => R::err_msg(e.to_string()),
+    }
 }
 
 pub fn build_menus(pms: &Vec<Menu>, ms: &Vec<Menu>) -> Vec<Menu> {
