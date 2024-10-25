@@ -10,25 +10,24 @@ Content-Type: application/json
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI1OTU4ODM0LCJleHAiOjE3MjU5NjYwMzR9.Bcvux9H5eRYX_Jk73gcF9tRWxOCcbRwLPhwUvpcmYNQ
 
 
-###
+### 新增角色
 POST  http://localhost:3000/api/role
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI1OTU4ODM0LCJleHAiOjE3MjU5NjYwMzR9.Bcvux9H5eRYX_Jk73gcF9tRWxOCcbRwLPhwUvpcmYNQ
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI5NzkwNjY2LCJleHAiOjE3Mjk3OTc4NjZ9.7JTmkyk_9IzF6qjVluRHBr2v3ZtURe9v2XHWuDsFrPE
 
 {
-  "app_id": 1,
   "name": "商务"
 }
 
-###
+### 角色列表
 GET http://localhost:3000/api/role?app_id=1&page=1&limit=10
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI1OTU4ODM0LCJleHAiOjE3MjU5NjYwMzR9.Bcvux9H5eRYX_Jk73gcF9tRWxOCcbRwLPhwUvpcmYNQ
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI5NzkwNjY2LCJleHAiOjE3Mjk3OTc4NjZ9.7JTmkyk_9IzF6qjVluRHBr2v3ZtURe9v2XHWuDsFrPE
 
 
-###
+### 新增用户
 POST  http://localhost:3000/api/user
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI1OTU4ODM0LCJleHAiOjE3MjU5NjYwMzR9.Bcvux9H5eRYX_Jk73gcF9tRWxOCcbRwLPhwUvpcmYNQ
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI5NzkwNjY2LCJleHAiOjE3Mjk3OTc4NjZ9.7JTmkyk_9IzF6qjVluRHBr2v3ZtURe9v2XHWuDsFrPE
 
 {
   "username": "guest2",
@@ -38,13 +37,13 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0I
   "status": 1
 }
 
-###
+### 用户列表
 GET http://localhost:3000/api/user?app_id=1&page=1&limit=10
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI1OTU4ODM0LCJleHAiOjE3MjU5NjYwMzR9.Bcvux9H5eRYX_Jk73gcF9tRWxOCcbRwLPhwUvpcmYNQ
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI5NzkwNjY2LCJleHAiOjE3Mjk3OTc4NjZ9.7JTmkyk_9IzF6qjVluRHBr2v3ZtURe9v2XHWuDsFrPE
 
 ### 当前用户信息
 GET http://localhost:3000/api/user/current
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI5Nzc2ODY2LCJleHAiOjE3Mjk3ODQwNjZ9.D8r8OXdT9EZ-CTunEEv5UBxHjX6q9ciTUzS7DlFJ-pA
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzI5NzkwNjY2LCJleHAiOjE3Mjk3OTc4NjZ9.7JTmkyk_9IzF6qjVluRHBr2v3ZtURe9v2XHWuDsFrPE
 
 
 ### 登录
@@ -52,7 +51,6 @@ POST  http://localhost:3000/login
 Content-Type: application/json
 
 {
-  "app_id": 1,
   "username": "admin",
   "password": "admin"
 }

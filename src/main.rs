@@ -27,7 +27,6 @@ async fn main() {
             "/api",
             Router::new()
                 .nest("/user", route::user::router())
-                .nest("/app", route::app::router())
                 .nest("/role", route::role::router())
                 .nest("/menu", route::menu::router())
                 .route_layer(middleware::from_fn(auth)),

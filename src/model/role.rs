@@ -9,14 +9,12 @@ use sqlx::{Error, FromRow, MySql, QueryBuilder};
 use tracing::info;
 
 pub async fn page(page: Page) -> Result<RP<Vec<Role>>, Error> {
-    let count: (i32,) = sqlx::query_as("SELECT count(1) FROM role WHERE app_id = ?")
-        .bind(page.app_id)
+    let count: (i32,) = sqlx::query_as("SELECT count(1) FROM role")
         .fetch_one(get_pool().unwrap())
         .await?;
     let mut ms: Vec<Role> = vec![];
     if count.0 > 0 {
-        ms = sqlx::query_as("SELECT * FROM role WHERE app_id = ? ORDER BY id DESC LIMIT ? OFFSET ?")
-            .bind(page.app_id)
+        ms = sqlx::query_as("SELECT * FROM role ORDER BY id DESC LIMIT ? OFFSET ?")
             .bind(page.limit.to_string())
             .bind(page.offset().to_string())
             .fetch_all(get_pool().unwrap())
@@ -24,10 +22,12 @@ pub async fn page(page: Page) -> Result<RP<Vec<Role>>, Error> {
         let ids = ms.iter().map(|e| e.id.unwrap()).collect();
         let rms = role_menu::get_menu_ids(ids).await?;
         for m in ms.iter_mut() {
-            m.menu_ids = Some(rms.iter()
-                .filter(|e| e.role_id == m.id)
-                .map(|e| e.menu_id.unwrap())
-                .collect());
+            m.menu_ids = Some(
+                rms.iter()
+                    .filter(|e| e.role_id == m.id)
+                    .map(|e| e.menu_id.unwrap())
+                    .collect(),
+            );
         }
     }
     Ok(RP::ok(count.0, ms))
@@ -36,18 +36,14 @@ pub async fn page(page: Page) -> Result<RP<Vec<Role>>, Error> {
 pub async fn sou(role: Role) -> Result<u64, Error> {
     let row;
     if role.id.is_none() {
-        row = sqlx::query::<MySql>(
-            "INSERT INTO role (app_id,name) VALUES (?,?)",
-        )
-            .bind(role.app_id)
+        row = sqlx::query::<MySql>("INSERT INTO role (name) VALUES (?)")
             .bind(role.name)
             .execute(get_pool().unwrap())
             .await?;
         info!("{} rows inserted", row.rows_affected());
     } else {
-        let mut sql: QueryBuilder<MySql> = QueryBuilder::new("UPDATE role SET app_id=");
-        sql.push_bind(role.app_id);
-        sql.push(" ,name=").push_bind(role.name);
+        let mut sql: QueryBuilder<MySql> = QueryBuilder::new("UPDATE role SET");
+        sql.push(" name=").push_bind(role.name);
         sql.push(" WHERE id=").push_bind(role.id);
         println!("sql:{}", sql.sql());
         row = sql.build().execute(get_pool().unwrap()).await?;
@@ -73,7 +69,6 @@ pub async fn del(ids: Vec<u64>) -> Result<(), Error> {
 #[derive(Debug, FromRow, Serialize, Deserialize, Clone)]
 pub struct Role {
     pub id: Option<u64>,
-    pub app_id: Option<u64>,
     pub name: Option<String>,
     #[serde(skip_deserializing)]
     #[serde(with = "date_format")]

@@ -14,9 +14,8 @@ pub async fn list_user_id(user_id: u64) -> Result<Vec<Menu>, Error> {
     Ok(ms)
 }
 
-pub async fn list(app_id: u64) -> Result<Vec<Menu>, Error> {
-    let ms: Vec<Menu> = sqlx::query_as("SELECT * FROM menu WHERE app_id = ? ORDER BY sort DESC")
-        .bind(app_id)
+pub async fn list() -> Result<Vec<Menu>, Error> {
+    let ms: Vec<Menu> = sqlx::query_as("SELECT * FROM menu WHERE ORDER BY sort DESC")
         .fetch_all(get_pool().unwrap())
         .await?;
     Ok(ms)
@@ -26,10 +25,9 @@ pub async fn sou(menu: Menu) -> Result<u64, Error> {
     let row;
     if menu.id.is_none() {
         row = sqlx::query::<MySql>(
-            "INSERT INTO menu (pid,app_id,name,path,component,icon,perms,type,sort,status) VALUES (?,?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO menu (pid,name,path,component,icon,perms,type,sort,status) VALUES (?,?,?,?,?,?,?,?,?)",
         )
             .bind(menu.pid)
-            .bind(menu.app_id)
             .bind(menu.name)
             .bind(menu.path)
             .bind(menu.component)
@@ -77,7 +75,6 @@ pub async fn del(ids: Vec<u64>) -> Result<(), Error> {
 pub struct Menu {
     pub id: Option<u64>,
     pub pid: Option<u64>,
-    pub app_id: Option<u64>,
     pub name: Option<String>,
     pub path: Option<String>,
     pub component: Option<String>,

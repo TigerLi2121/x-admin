@@ -8,9 +8,8 @@ use sqlx::types::chrono::NaiveDateTime;
 use sqlx::{Error, FromRow, MySql, QueryBuilder};
 use tracing::info;
 
-pub async fn get_user(app_id: u64, username: String) -> Result<User, Error> {
-    let m = sqlx::query_as::<MySql, User>("SELECT * FROM user WHERE app_id = ? AND username = ? LIMIT 1")
-        .bind(app_id)
+pub async fn get_user(username: String) -> Result<User, Error> {
+    let m = sqlx::query_as::<MySql, User>("SELECT * FROM user WHERE username = ? LIMIT 1")
         .bind(username)
         .fetch_one(get_pool().unwrap())
         .await?;
@@ -18,14 +17,12 @@ pub async fn get_user(app_id: u64, username: String) -> Result<User, Error> {
 }
 
 pub async fn page(page: Page) -> Result<RP<Vec<User>>, Error> {
-    let count: (i32,) = sqlx::query_as("SELECT count(1) FROM user WHERE app_id=?")
-        .bind(page.app_id)
+    let count: (i32,) = sqlx::query_as("SELECT count(1) FROM user")
         .fetch_one(get_pool().unwrap())
         .await?;
     let mut ms: Vec<User> = vec![];
     if count.0 > 0 {
-        ms = sqlx::query_as("SELECT * FROM user WHERE app_id=? ORDER BY id DESC LIMIT ? OFFSET ?")
-            .bind(page.app_id)
+        ms = sqlx::query_as("SELECT * FROM user ORDER BY id DESC LIMIT ? OFFSET ?")
             .bind(page.limit.to_string())
             .bind(page.offset().to_string())
             .fetch_all(get_pool().unwrap())
@@ -34,14 +31,14 @@ pub async fn page(page: Page) -> Result<RP<Vec<User>>, Error> {
         let user_ids = ms.iter().map(|e| e.id.unwrap()).collect();
         let urs = user_role::get_role_ids(user_ids).await?;
         for m in ms.iter_mut() {
-            m.role_ids = Some(urs
-                .iter()
-                .filter(|e| e.user_id == m.id)
-                .map(|e| e.role_id.unwrap())
-                .collect());
+            m.role_ids = Some(
+                urs.iter()
+                    .filter(|e| e.user_id == m.id)
+                    .map(|e| e.role_id.unwrap())
+                    .collect(),
+            );
         }
     }
-
 
     Ok(RP::ok(count.0, ms))
 }
@@ -49,17 +46,17 @@ pub async fn page(page: Page) -> Result<RP<Vec<User>>, Error> {
 pub async fn sou(user: User) -> Result<u64, Error> {
     let row;
     if user.id.is_none() {
+        info!("insert");
         row = sqlx::query::<MySql>(
-            "INSERT INTO user (app_id,username,password,email,mobile,status) VALUES (?,?,?,?,?,?)",
+            "INSERT INTO user (username,password,email,mobile,status) VALUES (?,?,?,?,?,?)",
         )
-            .bind(user.app_id)
-            .bind(user.username)
-            .bind(user.password)
-            .bind(user.email)
-            .bind(user.mobile)
-            .bind(user.status)
-            .execute(get_pool().unwrap())
-            .await?;
+        .bind(user.username)
+        .bind(user.password)
+        .bind(user.email)
+        .bind(user.mobile)
+        .bind(user.status)
+        .execute(get_pool().unwrap())
+        .await?;
         info!("{} rows inserted", row.rows_affected());
     } else {
         let mut sql: QueryBuilder<MySql> = QueryBuilder::new("UPDATE user SET username=");
@@ -94,7 +91,6 @@ pub async fn del(ids: Vec<u64>) -> Result<(), Error> {
 #[derive(Debug, FromRow, Serialize, Deserialize, Clone)]
 pub struct User {
     pub id: Option<u64>,
-    pub app_id: Option<u64>,
     pub username: Option<String>,
     pub password: Option<String>,
     pub email: Option<String>,

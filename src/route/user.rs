@@ -19,8 +19,8 @@ pub fn router() -> Router {
         .route("/current", get(current))
 }
 
-pub async fn login(login: Json<Login>) -> R<String> {
-    let user: Result<User, Error> = get_user(login.app_id, login.username.to_string()).await;
+pub async fn login(Json(login): Json<Login>) -> R<String> {
+    let user: Result<User, Error> = get_user(login.username.to_string()).await;
     if user.is_err() {
         return R::err_msg("username not exist".to_string());
     }
@@ -36,37 +36,42 @@ pub async fn login(login: Json<Login>) -> R<String> {
     R::ok_data(token)
 }
 
-pub async fn page(page: Query<Page>) -> RP<Vec<User>> {
-    user::page(page.0).await.unwrap()
+pub async fn page(Query(p): Query<Page>) -> RP<Vec<User>> {
+    user::page(p).await.unwrap()
 }
 
-pub async fn sou(mut user: Json<User>) -> R<Value> {
-    if user.password.is_some() && !user.password.clone().unwrap().is_empty() {
-        user.password = Some(format!(
+pub async fn sou(Json(mut m): Json<User>) -> R<Value> {
+    if m.password.is_some() && !m.password.clone().unwrap().is_empty() {
+        m.password = Some(format!(
             "{:x}",
-            Md5::digest(user.password.clone().unwrap().as_bytes())
+            Md5::digest(m.password.clone().unwrap().as_bytes())
         ));
     }
-    user::sou(user.0).await.unwrap();
+    user::sou(m).await.unwrap();
     R::ok()
 }
 
-pub async fn del(ids: Json<Vec<u64>>) -> R<Value> {
-    user::del(ids.0).await.unwrap();
+pub async fn del(Json(ids): Json<Vec<u64>>) -> R<Value> {
+    user::del(ids).await.unwrap();
     R::ok()
 }
 
 pub async fn current(req: Request) -> R<UserInfo> {
     let user = req.extensions().get::<User>().unwrap();
     let mut ms = menu::list_user_id(user.id.unwrap()).await.unwrap();
-    let perms = ms.iter().filter(|m| m.perms != Some("".to_string()))
-        .map(|m| m.clone().perms.unwrap()).collect();
+    let perms = ms
+        .iter()
+        .filter(|m| m.perms != Some("".to_string()))
+        .map(|m| m.clone().perms.unwrap())
+        .collect();
     ms = ms.into_iter().filter(|m| m.r#type != Some(3)).collect();
-    let pms = ms.iter().filter(|m| m.pid == Some(0))
-        .map(|e| convert(e.clone())).collect();
+    let pms = ms
+        .iter()
+        .filter(|m| m.pid == Some(0))
+        .map(|e| convert(e.clone()))
+        .collect();
     let ui = UserInfo {
         id: user.id,
-        app_id: user.app_id,
         username: user.username.clone(),
         email: user.email.clone(),
         mobile: user.mobile.clone(),
@@ -77,29 +82,42 @@ pub async fn current(req: Request) -> R<UserInfo> {
 }
 
 pub fn build_user_menus(pms: &Vec<UserMenu>, ms: &Vec<Menu>) -> Vec<UserMenu> {
-    pms.iter().map(|pm| {
-        let mut pm = pm.clone();
-        let cms = ms.iter().filter(|m| m.pid == pm.id)
-            .map(|e| convert(e.clone())).collect::<Vec<UserMenu>>();
-        if cms.is_empty() {
-            pm.redirect = Some(format!("{}{}", pm.path.clone().unwrap(), pm.path.clone().unwrap()));
-            pm.meta.as_mut().unwrap().single = Some(true);
-            pm.children = Some(vec![UserMenu {
-                id: pm.id.clone(),
-                path: Some(pm.path.clone().unwrap().replace("/", "")),
-                name: pm.name.clone(),
-                component: pm.component.clone(),
-                redirect: None,
-                meta: pm.meta.clone(),
-                children: Some(Vec::new()),
-            }]);
-        } else {
-            pm.redirect = Some(format!("{}/{}", pm.path.clone().unwrap(), pm.path.clone().unwrap()));
-            pm.children = Some(build_user_menus(&cms, &ms));
-        }
-        pm.component = Some("LAYOUT".to_string());
-        pm
-    }).collect()
+    pms.iter()
+        .map(|pm| {
+            let mut pm = pm.clone();
+            let cms = ms
+                .iter()
+                .filter(|m| m.pid == pm.id)
+                .map(|e| convert(e.clone()))
+                .collect::<Vec<UserMenu>>();
+            if cms.is_empty() {
+                pm.redirect = Some(format!(
+                    "{}{}",
+                    pm.path.clone().unwrap(),
+                    pm.path.clone().unwrap()
+                ));
+                pm.meta.as_mut().unwrap().single = Some(true);
+                pm.children = Some(vec![UserMenu {
+                    id: pm.id.clone(),
+                    path: Some(pm.path.clone().unwrap().replace("/", "")),
+                    name: pm.name.clone(),
+                    component: pm.component.clone(),
+                    redirect: None,
+                    meta: pm.meta.clone(),
+                    children: Some(Vec::new()),
+                }]);
+            } else {
+                pm.redirect = Some(format!(
+                    "{}/{}",
+                    pm.path.clone().unwrap(),
+                    pm.path.clone().unwrap()
+                ));
+                pm.children = Some(build_user_menus(&cms, &ms));
+            }
+            pm.component = Some("LAYOUT".to_string());
+            pm
+        })
+        .collect()
 }
 
 fn convert(menu: Menu) -> UserMenu {
@@ -113,6 +131,7 @@ fn convert(menu: Menu) -> UserMenu {
             title: menu.name,
             icon: menu.icon,
             single: Some(false),
+            hidden: Some(menu.status == Some(2)),
         }),
         children: Some(Vec::new()),
     }
@@ -121,7 +140,6 @@ fn convert(menu: Menu) -> UserMenu {
 #[derive(Deserialize, Serialize, Debug)]
 pub struct UserInfo {
     pub id: Option<u64>,
-    pub app_id: Option<u64>,
     pub username: Option<String>,
     pub email: Option<String>,
     pub mobile: Option<String>,
@@ -144,12 +162,14 @@ pub struct UserMenu {
 pub struct MenuMeta {
     pub title: Option<String>,
     pub icon: Option<String>,
+    // 菜单是否展示一级节点
     pub single: Option<bool>,
+    // 菜单是否展示
+    pub hidden: Option<bool>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Login {
-    app_id: u64,
     username: String,
     password: String,
 }

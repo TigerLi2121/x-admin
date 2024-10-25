@@ -11,16 +11,16 @@ pub fn router() -> Router {
     Router::new().route("/", get(page).post(sou).delete(del))
 }
 
-pub async fn page(page: Query<Page>) -> RP<Vec<Role>> {
-    role::page(page.0).await.unwrap()
+pub async fn page(Query(p): Query<Page>) -> RP<Vec<Role>> {
+    role::page(p).await.unwrap()
 }
 
-pub async fn sou(app: Json<Role>) -> R<Value> {
-    role::sou(app.0).await.unwrap();
+pub async fn sou(Json(m): Json<Role>) -> R<Value> {
+    role::sou(m).await.unwrap();
     R::ok()
 }
 
-pub async fn del(ids: Json<Vec<u64>>) -> R<Value> {
-    role::del(ids.0).await.unwrap();
+pub async fn del(Json(ids): Json<Vec<u64>>) -> R<Value> {
+    role::del(ids).await.unwrap();
     R::ok()
 }
