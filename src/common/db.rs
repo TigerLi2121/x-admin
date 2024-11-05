@@ -7,7 +7,8 @@ static MYSQL_POOL: OnceCell<MySqlPool> = OnceCell::new();
 pub async fn init_db_pool() -> Result<(), Error> {
     let database_url = dotenv::var("DATABASE_URL").unwrap();
     let pool = MySqlPoolOptions::new()
-        .max_connections(5)
+        .max_connections(100)
+        .min_connections(10)
         .connect(&database_url)
         .await?;
     assert!(MYSQL_POOL.set(pool).is_ok());
