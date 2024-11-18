@@ -15,7 +15,7 @@ export const useUserStore = defineStore("user", {
   }),
   actions: {
     async login(user: any) {
-      const res: any = await request.post("/x-admin/login", user);
+      const res: any = await request.post("/api/login", user);
       if (res.data) {
         this.token = res.data;
         localStorage.setItem("x-token", this.token);
@@ -24,7 +24,7 @@ export const useUserStore = defineStore("user", {
     },
     async getUserInfo() {
       this.token = localStorage.getItem("x-token");
-      const res = await request.get("/x-admin/api/user/current");
+      const res = await request.get("/api/user/current");
       if (res.data) {
         this.userInfo = res.data;
       }

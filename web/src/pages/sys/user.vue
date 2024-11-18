@@ -118,7 +118,7 @@ const isLoading = ref(false);
 const list = async (page: any = pagination.value) => {
   isLoading.value = true;
   try {
-    const res: any = await request.get('/x-admin/api/user', {
+    const res: any = await request.get('/api/user', {
       params: { page: page.current, limit: page.pageSize, ...query.value },
     });
     if (res.data) {
@@ -133,7 +133,7 @@ const list = async (page: any = pagination.value) => {
 };
 // 角色选择数据
 const getRoleSelect = async () => {
-  const res: any = await request.get('/x-admin/api/role?page=1&limit=10000');
+  const res: any = await request.get('/api/role?page=1&limit=10000');
   if (res.data) {
     return res.data.map((e) => ({ value: e.id, label: e.name }));
   }
@@ -168,7 +168,7 @@ const rules: any = {
 const onSubmit = async ({ validateResult, firstError, e }) => {
   e.preventDefault();
   if (validateResult === true) {
-    const res: any = await request.post('/x-admin/api/user', d.value);
+    const res: any = await request.post('/api/user', d.value);
     if (res.code === 0) {
       MessagePlugin.success('处理成功');
       dialogVisible.value = false;
@@ -180,7 +180,7 @@ const onSubmit = async ({ validateResult, firstError, e }) => {
 };
 // 删除数据
 const del = async (ids) => {
-  const res: any = await request.delete('/x-admin/api/user', { data: ids });
+  const res: any = await request.delete('/api/user', { data: ids });
   if (res.code === 0) {
     MessagePlugin.success('删除成功');
     await list();

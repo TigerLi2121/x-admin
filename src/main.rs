@@ -22,7 +22,7 @@ async fn main() {
 
     let router = Router::new()
         .route("/", get(|| async { "Hello, World!" }))
-        .route("/login", post(route::user::login))
+        .route("/api/login", post(route::user::login))
         .nest(
             "/api",
             Router::new()
@@ -35,7 +35,5 @@ async fn main() {
         .layer(CorsLayer::new().allow_methods(Any).allow_origin(Any));
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     info!("listening on {}", listener.local_addr().unwrap());
-    axum::serve(listener, Router::new().nest("/x-admin", router))
-        .await
-        .unwrap();
+    axum::serve(listener, router).await.unwrap();
 }

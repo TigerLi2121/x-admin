@@ -108,7 +108,7 @@ const isLoading = ref(false);
 const list: any = async (page = pagination.value) => {
   isLoading.value = true;
   try {
-    const res: any = await request.get('/x-admin/api/sys_log', {
+    const res: any = await request.get('/api/sys_log', {
       params: { ...query.value, page: page.current, limit: page.pageSize },
     });
     if (res.data) {
@@ -140,7 +140,7 @@ const update = (row) => {
 const onSubmit = async ({ validateResult, firstError, e }) => {
   e.preventDefault();
   if (validateResult === true) {
-    const res: any = await request.post('/x-admin/api/sys_log', d.value);
+    const res: any = await request.post('/api/sys_log', d.value);
     if (res.code === 0) {
       MessagePlugin.success('处理成功');
       dialogVisible.value = false;
@@ -152,7 +152,7 @@ const onSubmit = async ({ validateResult, firstError, e }) => {
 };
 // 删除数据
 const del = async (ids) => {
-  const res: any = await request.delete('/x-admin/api/sys_log', { data: ids });
+  const res: any = await request.delete('/api/sys_log', { data: ids });
   if (res.code === 0) {
     MessagePlugin.success('删除成功');
     await list();

@@ -91,7 +91,7 @@ const tree = ref(null);
 const list: any = async (page = pagination.value) => {
   isLoading.value = true;
   try {
-    const res: any = await request.get('/x-admin/api/role', {
+    const res: any = await request.get('/api/role', {
       params: { page: page.current, limit: page.pageSize },
     });
     if (res.data) {
@@ -142,7 +142,7 @@ const menuData = (menus) => {
 };
 // 获取菜单树
 const menuList = async () => {
-  const res: any = await request.get('/x-admin/api/menu');
+  const res: any = await request.get('/api/menu');
   if (res.data) {
     menus.value = menuData(res.data);
     // console.log('menus:', JSON.stringify(menus.value));
@@ -195,7 +195,7 @@ const rules: any = {
 };
 // 保存修改数据
 const saveOrUpdate = async (params) => {
-  const res: any = await request.post('/x-admin/api/role', params);
+  const res: any = await request.post('/api/role', params);
   if (res.code === 0) {
     MessagePlugin.success('处理成功');
     dialogVisible.value = false;
@@ -224,7 +224,7 @@ const onSubmit = async ({ validateResult, firstError, e }) => {
 };
 // 删除数据
 const del = async (ids) => {
-  const res: any = await request.delete('/x-admin/api/role', { data: ids });
+  const res: any = await request.delete('/api/role', { data: ids });
   if (res.code === 0) {
     MessagePlugin.success('删除成功');
     await list();
